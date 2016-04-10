@@ -1845,14 +1845,15 @@ list_transfer(ftp_session_t *session)
 #ifdef _3DS
       /* the sdmc directory entry already has the type and size, so no need to do a slow stat */
       sdmc_dir_t *dir = (sdmc_dir_t*)session->dp->dirData->dirStruct;
+      FS_DirectoryEntry *entry = &dir->entry_data[dir->index];
 
-      if(dir->entry_data.attributes & FS_ATTRIBUTE_DIRECTORY)
+      if(entry->attributes & FS_ATTRIBUTE_DIRECTORY)
         st.st_mode = S_IFDIR;
       else
         st.st_mode = S_IFREG;
 
-      st.st_size = dir->entry_data.fileSize;
-      
+      st.st_size = entry->fileSize;
+
       if((rc = build_path(session, session->lwd, dent->d_name)) != 0)
         console_print(RED "build_path: %d %s\n" RESET, errno, strerror(errno));
       else if((rc = sdmc_getmtime(session->buffer, &mtime)) != 0)
